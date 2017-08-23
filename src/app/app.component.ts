@@ -17,16 +17,16 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
   rootPage:any = TabsPage;
 
-   pages: Array<{title: string, component: any}>;
+   pages: Array<{title: string, component: any, icon: string}>;
 
   constructor(public platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
     this.pages = [
-      { title: 'Post An AD', component: PostAnAdvertPage },
-      { title: 'Billboard', component: TabsPage },
-      { title: 'Manage Categories', component: PreferedCategoryPage },
-      { title: 'Contact Us', component: ContactUsPage },
-      { title: 'Help', component: HelpPage },
-      { title: 'About', component: AboutPage }
+      { title: 'Post An AD', component: PostAnAdvertPage, icon: 'add' },
+      { title: 'Billboard', component: TabsPage, icon: 'easel' },
+      { title: 'Manage Categories', component: PreferedCategoryPage, icon: 'man' },
+      { title: 'Contact Us', component: ContactUsPage, icon: 'contacts' },
+      { title: 'Help', component: HelpPage, icon: 'help' },
+      { title: 'About', component: AboutPage, icon: 'hand' }
     ];
 
     platform.ready().then(() => {
