@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content class="outer-content">
-  <form [formGroup]="advert" (ngSubmit)="submit()">
+  <form [formGroup]="advertForm" (ngSubmit)="submit()">
   <ion-list>
 
       <ion-item>
@@ -77,7 +77,7 @@
   <ion-list>
     <ion-item>
       <ion-label>Post as a business</ion-label>
-      <ion-toggle checked="false" [(ngModel)]="advert.postAsaBusiness" formControlName="postAsaBusiness"></ion-toggle>
+      <ion-toggle checked="false" [(ngModel)]="advert.postAsaBusiness" formControlName="postAsaBusiness" (ionChange)="postAsaBusinessChanged()"></ion-toggle>
     </ion-item>
     <ion-item *ngIf="advert.postAsaBusiness">
       <ion-label floating>Business Name</ion-label>
