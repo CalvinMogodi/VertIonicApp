@@ -12,6 +12,7 @@ import { PreferedCategoryPage } from '../pages/preferedcatetory/preferedcatetory
 
 @Component({
   templateUrl: 'app.html'
+  
 })
 export class MyApp {
   @ViewChild(Nav) nav: Nav;

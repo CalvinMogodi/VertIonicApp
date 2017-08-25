@@ -9,6 +9,106 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="outer-content">
+  <form [formGroup]="advert" (ngSubmit)="submit()">
+  <ion-list>
 
+      <ion-item>
+        <ion-avatar item-start>
+          <img src="assets/img/bsLogo.png">
+          <p>Edit</p>
+        </ion-avatar>
+        <ion-label floating >Advert Name</ion-label>
+        <ion-input type="text" [(ngModel)]="advert.name" formControlName="name"></ion-input>
+      </ion-item>
+      
+       <p class="has-error-lr" *ngIf="!isValid('name') || formIsSubmitted" danger padding-left>Invalid Name</p>
+      <ion-item>
+        <ion-label>Category</ion-label>
+        <ion-select [(ngModel)]="advert.category" interface="popover" formControlName="category">
+          <ion-option value="nes">NES</ion-option>
+          <ion-option value="n64">Nintendo64</ion-option>
+          <ion-option value="ps">PlayStation</ion-option>
+          <ion-option value="genesis">Sega Genesis</ion-option>
+          <ion-option value="saturn">Sega Saturn</ion-option>
+          <ion-option value="snes">SNES</ion-option>
+        </ion-select>
+      </ion-item>
+ 
+  </ion-list>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>Start Date</ion-label>
+      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="advert.dateStart"  placeholder="Username" formControlName="dateStart"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Start Time</ion-label>
+      <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="advert.timeStart" formControlName="timeStart"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>End Date</ion-label>
+      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="advert.dateEnd" formControlName="dateEnd"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>End Time</ion-label>
+      <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="advert.timeEnd" formControlName="timeEnd"></ion-datetime>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <ion-item>
+      <ion-label floating>Mobile Number</ion-label>
+      <ion-input type="number" [(ngModel)]="advert.mobileNumber" formControlName="mobileNumber"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Email Address</ion-label>
+      <ion-input type="email" [(ngModel)]="advert.emailAddress" formControlName="emailAddress"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Location</ion-label>
+      <ion-input type="text" [(ngModel)]="advert.location" formControlName="location"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>Post as a business</ion-label>
+      <ion-toggle checked="false" [(ngModel)]="advert.postAsaBusiness" formControlName="postAsaBusiness"></ion-toggle>
+    </ion-item>
+    <ion-item *ngIf="advert.postAsaBusiness">
+      <ion-label floating>Business Name</ion-label>
+      <ion-input type="text" [(ngModel)]="advert.businessName" formControlName="businessName"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="advert.postAsaBusiness">
+      <ion-label floating>Business Registration Number</ion-label>
+      <ion-input type="text" [(ngModel)]="advert.businessRegistrationNumber" formControlName="businessRegistrationNumber"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="advert.postAsaBusiness">
+      <ion-label floating>Business Website</ion-label>
+      <ion-input type="text" [(ngModel)]="advert.businessWebsite" formControlName="businessWebsite"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <button ion-button color="dark" round type="submit">Post</button>
+   </form>
 </ion-content>
+
+<style>
+  ion-list:first-child {
+    margin-top: 32px;
+  }
+  
+  ion-list + ion-list {
+    margin-top: 0;
+  }
+</style>
+
+<script id="templates/form-errors.html" type="text/ng-template">  
+  <div class="form-error" ng-message="required">This field is required.</div>
+  <div class="form-error" ng-message="minlength">This field is must be at least 5 characters.</div>
+  <div class="form-error" ng-message="maxlength">This field is must be less than 50 characters</div>
+</script> 
