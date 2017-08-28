@@ -14,9 +14,9 @@
   <ion-list>
 
       <ion-item>
-        <ion-avatar item-start>
-          <img src="assets/img/bsLogo.png">
-          <p>Edit</p>
+        <ion-avatar item-start (click)="presentActionSheet()">
+          <img src="{{pathForImage(lastImage)}}">
+          <p>Select Photo</p>
         </ion-avatar>
         <ion-label floating >Advert Name</ion-label>
         <ion-input type="text" [(ngModel)]="advert.name" formControlName="name"></ion-input>

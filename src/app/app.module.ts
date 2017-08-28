@@ -15,6 +15,10 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 // Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
+import { File } from '@ionic-native/file';
+import { Transfer } from '@ionic-native/transfer';
+import { FilePath } from '@ionic-native/file-path';
+import { Camera } from '@ionic-native/camera';
 
 export const firebaseConfig = {
    apiKey: "AIzaSyBHQX44svGWHFMdmLa2kmD_lhVAm6YC-4I",
@@ -58,6 +62,10 @@ export const firebaseConfig = {
   providers: [
     StatusBar,
     SplashScreen,
+     File,
+    Transfer,
+    Camera,
+    FilePath,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

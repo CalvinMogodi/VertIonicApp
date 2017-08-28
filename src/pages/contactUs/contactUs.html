@@ -10,5 +10,19 @@
 </ion-header>
 
 <ion-content padding>
-
+   <form [formGroup]="contactUsForm" (ngSubmit)="submit()">
+      <ion-list>
+  <ion-item>
+     <p>
+        Leave us a message or comment
+    </p>
+</ion-item>
+<ion-item text-wrap hight="250px">
+ <ion-textarea [(ngModel)]="message.name" rows="1" id="messageInputBox" placeholder="Send message" (input)="change()" required formControlName="name"></ion-textarea>
+</ion-item>
+<div text-center padding>
+     <button ion-button color="dark" round type="submit">Post</button>
+</div>
+    </ion-list>
+    </form>
 </ion-content>
