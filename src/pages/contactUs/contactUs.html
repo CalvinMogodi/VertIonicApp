@@ -9,20 +9,32 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<div padding [style.margin-top]="'60px'">
    <form [formGroup]="contactUsForm" (ngSubmit)="submit()">
       <ion-list>
+
+ <ion-item>
+   <ion-avatar item-start (click)="presentActionSheet()">
+           <ion-icon name="mail"></ion-icon>
+        </ion-avatar>
+      <h2>Email</h2>
+     <p>dvert2530@gmail.com</p>
+</ion-item>
   <ion-item>
-     <p>
-        Leave us a message or comment
-    </p>
+    <ion-avatar item-start (click)="presentActionSheet()">
+           <ion-icon name="call"></ion-icon>
+        </ion-avatar>
+      <h2>Phone</h2>
+     <p>073 169 7774</p>
 </ion-item>
-<ion-item text-wrap hight="250px">
- <ion-textarea [(ngModel)]="message.name" rows="1" id="messageInputBox" placeholder="Send message" (input)="change()" required formControlName="name"></ion-textarea>
+<ion-item>
+     <ion-label floating >Leave us a message or comment</ion-label>
+ <ion-textarea  [(ngModel)]="message.name" rows="1" id="messageInputBox" (input)="change()" required formControlName="name"></ion-textarea>
 </ion-item>
-<div text-center padding>
-     <button ion-button color="dark" round type="submit">Post</button>
+<div text-center>
+  <p [style.color]="'red'" *ngIf="errorMessageIsHidden" class="errorMessage">The field above is required</p>
+     <button ion-button color="dark" round type="submit">Send Message</button>
 </div>
     </ion-list>
     </form>
-</ion-content>
+</div>

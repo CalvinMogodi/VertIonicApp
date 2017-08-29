@@ -13,6 +13,7 @@ import { ContactUsPage } from '../pages/contactUs/contactUs';
 import { PreferedCategoryPage } from '../pages/preferedcatetory/preferedcatetory';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { SQLite } from '@ionic-native/sqlite';
 // Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
 import { File } from '@ionic-native/file';
@@ -66,6 +67,7 @@ export const firebaseConfig = {
     Transfer,
     Camera,
     FilePath,
+    SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

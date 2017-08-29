@@ -8,4 +8,13 @@ ion-spinner * {
   stroke: #444;
   fill: #222;
 }
+
+.messageTextBox{
+ height: 600px;
+}
+
+.errorMessage{
+font-size: smaller;
+color: red;
+}
 }

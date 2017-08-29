@@ -5,10 +5,10 @@ import {AngularFire, FirebaseListObservable} from 'angularfire2';
 
 @Component({
   selector: 'page-contactUs',
-  templateUrl: 'contactUs.html'
+  templateUrl: 'contactUs.html',
 })
 export class ContactUsPage {
-
+errorMessageIsHidden = false;
   public message = {
      name: undefined,
     };
@@ -26,21 +26,23 @@ export class ContactUsPage {
   }
 
    submit(): void {
-     this.loading = this.loadingCtrl.create({
-    content: 'Please wait...',
-  });
-  this.loading.present();
+      this.errorMessageIsHidden = false;
       if(this.contactUsForm.valid){
-          this.messages.push(this.message);
-          this.message.name = '';
+        this.loading = this.loadingCtrl.create({
+            content: 'Please wait...',
+        });
+        this.loading.present();
+        this.messages.push(this.message);
+        this.message.name = '';
         let toast = this.toastCtrl.create({
           message: 'Advert is added successfully',
           duration: 2000
         });
         toast.present();
+         this.loading.dismiss();
+      }else{
+        this.errorMessageIsHidden = true;
       }
-
-       this.loading.dismiss();
    }
 
   change() {
