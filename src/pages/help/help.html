@@ -9,12 +9,13 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="outer-content">
+<ion-content padding>
   <ion-list *ngFor="let FAQ of FAQs">
     <ion-item>
       <h2>{{FAQ.question}}</h2>
       <p>{{FAQ.answer}}</p>
       <button ion-button clear item-end (click)="showAlert(FAQ)"  >View</button>
     </ion-item>
+    <ion-item-divider color="light"></ion-item-divider>
   </ion-list>
 </ion-content>

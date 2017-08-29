@@ -33,13 +33,15 @@ errorMessageIsHidden = false;
         });
         this.loading.present();
         this.messages.push(this.message);
+        this.loading.dismiss();
         this.message.name = '';
         let toast = this.toastCtrl.create({
-          message: 'Advert is added successfully',
+          message: 'Your message is sent successfully',
+          position: "bottom",
           duration: 2000
         });
-        toast.present();
-         this.loading.dismiss();
+        toast.present(toast);
+         
       }else{
         this.errorMessageIsHidden = true;
       }

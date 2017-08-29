@@ -12,12 +12,14 @@
 <ion-content class="outer-content">
   <form [formGroup]="advertForm" (ngSubmit)="submit()">
   <ion-list>
-
-      <ion-item>
-        <ion-avatar item-start (click)="presentActionSheet()">
+ <ion-item>
+        <ion-avatar (click)="presentActionSheet()">
           <img src="{{pathForImage(lastImage)}}">
           <p>Select Photo</p>
         </ion-avatar>
+      </ion-item>
+      <ion-item>
+        
         <ion-label floating >Advert Name</ion-label>
         <ion-input type="text" [(ngModel)]="advert.name" formControlName="name"></ion-input>
       </ion-item>
@@ -25,13 +27,26 @@
        <p class="has-error-lr" *ngIf="!isValid('name') || formIsSubmitted" danger padding-left>Invalid Name</p>
       <ion-item>
         <ion-label>Category</ion-label>
-        <ion-select [(ngModel)]="advert.category" interface="popover" formControlName="category">
-          <ion-option value="nes">NES</ion-option>
-          <ion-option value="n64">Nintendo64</ion-option>
-          <ion-option value="ps">PlayStation</ion-option>
-          <ion-option value="genesis">Sega Genesis</ion-option>
-          <ion-option value="saturn">Sega Saturn</ion-option>
-          <ion-option value="snes">SNES</ion-option>
+        <ion-select [(ngModel)]="advert.category" placeholder="Select Category" interface="action-sheet" formControlName="category">
+          <ion-option value="Adventure Or Theme Park">Adventure Or Theme Park</ion-option>
+          <ion-option value="Art">Art</ion-option>
+          <ion-option value="Bar, Club Or Pub">Bar, Club Or Pub</ion-option>
+          <ion-option value="Beauty And Spa">Beauty And Spa</ion-option>
+          <ion-option value="Cars">Cars</ion-option>
+          <ion-option value="Fashion">Fashion</ion-option>
+          <ion-option value="Games">Games</ion-option>
+          <ion-option value="Health">Health</ion-option>
+          <ion-option value="Hotel Or Casino">Hotel Or Casino</ion-option>
+          <ion-option value="Investor Or Bank">Investor Or Bank</ion-option>
+          <ion-option value="Mall Or Shopping Center">Mall Or Shopping Center</ion-option>
+          <ion-option value="Music And Radio">Music And Radio</ion-option>
+          <ion-option value="Restaurant Or Gas Station">Restaurant Or Gas Station</ion-option>
+          <ion-option value="Software And Technology">Software And Technology</ion-option>
+          <ion-option value="Sport">Sport</ion-option>
+          <ion-option value="Supermarket">Supermarket</ion-option>
+          <ion-option value="Travel">Travel</ion-option>
+          <ion-option value="Theater">Theater</ion-option>
+          <ion-option value="Wholesale And Hardware">Wholesale And Hardware</ion-option>
         </ion-select>
       </ion-item>
  
@@ -39,13 +54,14 @@
 
   <ion-list>
     <ion-item>
+      
       <ion-label>Start Date</ion-label>
-      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="advert.dateStart"  placeholder="Username" formControlName="dateStart"></ion-datetime>
+      <ion-datetime displayFormat="DD-MMM-YYYY" pickerFormat="DD-MMM-YYYY" [(ngModel)]="advert.dateStart"   formControlName="dateStart"></ion-datetime>
     </ion-item>
 
     <ion-item>
       <ion-label>Start Time</ion-label>
-      <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="advert.timeStart" formControlName="timeStart"></ion-datetime>
+      <ion-datetime displayFormat="h:mm A" pickerFormat="h:mm A" [(ngModel)]="advert.timeStart" formControlName="timeStart"></ion-datetime>
     </ion-item>
 
     <ion-item>

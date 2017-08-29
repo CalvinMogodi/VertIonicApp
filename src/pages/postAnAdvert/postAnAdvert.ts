@@ -18,6 +18,11 @@ export class PostAnAdvertPage {
   lastImage: string = null;
   loading: Loading;
   public presentActionSheet() {
+    let toast = this.toastCtrl.create({
+          message: 'Take photo stated',
+          duration: 2000
+        });
+        toast.present();
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Select Image Source',
       buttons: [
@@ -45,10 +50,10 @@ export class PostAnAdvertPage {
   public advert = {
      name: undefined,
       category: undefined,
-      dateStart: undefined, 
-      timeStart: undefined, 
-      dateEnd: undefined, 
-      timeEnd: undefined, 
+      dateStart: new Date().toISOString(), 
+      timeStart: new Date().getTime(), 
+      dateEnd:  new Date().toISOString(), 
+      timeEnd: new Date().getTime(), 
       mobileNumber: undefined, 
       emailAddress: undefined, 
       location: undefined, 
@@ -58,12 +63,13 @@ export class PostAnAdvertPage {
       businessWebsite: '', 
       isApproved: false,
       imageRef: undefined,
+      
   };
   advertForm: FormGroup;
   adverts: FirebaseListObservable<any>;
  formIsSubmitted = false;
   constructor(public navCtrl: NavController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController) {
-      this.adverts = af.database.list('/avert');
+      this.adverts = af.database.list('/advert');
     this.advertForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       category: [undefined, Validators.required],
