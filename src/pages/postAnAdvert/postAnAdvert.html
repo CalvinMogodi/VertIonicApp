@@ -1,130 +1,148 @@
 <ion-header>
-  <ion-navbar>
-    <button ion-button menuToggle>
+    <ion-navbar color="dark">
+       <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>
-      New Advert
-    </ion-title>
-  </ion-navbar>
+      <ion-title start>
+        Add Advert
+      </ion-title>
+      <ion-buttons end>
+        <button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Prev</button>
+        <button ion-button icon-right (click)="next()">Next <ion-icon name="arrow-forward"></ion-icon></button>
+      </ion-buttons>
+    </ion-navbar>
 </ion-header>
 
-<ion-content class="outer-content">
-  <form [formGroup]="advertForm" (ngSubmit)="submit()">
-  <ion-list>
- <ion-item>
-        <ion-avatar (click)="presentActionSheet()">
-          <img src="{{pathForImage(lastImage)}}">
-          <p>Select Photo</p>
-        </ion-avatar>
-      </ion-item>
-      <ion-item>
-        
-        <ion-label floating >Advert Name</ion-label>
-        <ion-input type="text" [(ngModel)]="advert.name" formControlName="name"></ion-input>
-      </ion-item>
-      
-       <p class="has-error-lr" *ngIf="!isValid('name') || formIsSubmitted" danger padding-left>Invalid Name</p>
-      <ion-item>
-        <ion-label>Category</ion-label>
-        <ion-select [(ngModel)]="advert.category" placeholder="Select Category" interface="action-sheet" formControlName="category">
-          <ion-option value="Adventure Or Theme Park">Adventure Or Theme Park</ion-option>
-          <ion-option value="Art">Art</ion-option>
-          <ion-option value="Bar, Club Or Pub">Bar, Club Or Pub</ion-option>
-          <ion-option value="Beauty And Spa">Beauty And Spa</ion-option>
-          <ion-option value="Cars">Cars</ion-option>
-          <ion-option value="Fashion">Fashion</ion-option>
-          <ion-option value="Games">Games</ion-option>
-          <ion-option value="Health">Health</ion-option>
-          <ion-option value="Hotel Or Casino">Hotel Or Casino</ion-option>
-          <ion-option value="Investor Or Bank">Investor Or Bank</ion-option>
-          <ion-option value="Mall Or Shopping Center">Mall Or Shopping Center</ion-option>
-          <ion-option value="Music And Radio">Music And Radio</ion-option>
-          <ion-option value="Restaurant Or Gas Station">Restaurant Or Gas Station</ion-option>
-          <ion-option value="Software And Technology">Software And Technology</ion-option>
-          <ion-option value="Sport">Sport</ion-option>
-          <ion-option value="Supermarket">Supermarket</ion-option>
-          <ion-option value="Travel">Travel</ion-option>
-          <ion-option value="Theater">Theater</ion-option>
-          <ion-option value="Wholesale And Hardware">Wholesale And Hardware</ion-option>
-        </ion-select>
-      </ion-item>
+<ion-content>
+<ion-slides #signupSlider pager>
+  <ion-slide>
+    <ion-list>
+        <form [formGroup]="slideOneForm">
+            <ion-item>
+                <ion-label floating>Advert Name</ion-label>
+                <ion-input  [(ngModel)]="advert.advertName" formControlName="advertName" type="text"  [class.invalid]="!slideOneForm.controls.advertName.valid && (slideOneForm.controls.advertName.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Category</ion-label>
+                <ion-select [(ngModel)]="advert.category"  [class.invalid]="!slideOneForm.controls.category.valid && (slideOneForm.controls.category.dirty || submitAttempt)" formControlName="category">
+                    <ion-option value="Adventure Or Theme Park">Adventure Or Theme Park</ion-option>
+                    <ion-option value="Art">Art</ion-option>
+                    <ion-option value="Bar, Club Or Pub">Bar, Club Or Pub</ion-option>
+                    <ion-option value="Beauty And Spa">Beauty And Spa</ion-option>
+                    <ion-option value="Cars">Cars</ion-option>
+                    <ion-option value="Fashion">Fashion</ion-option>
+                    <ion-option value="Games">Games</ion-option>
+                    <ion-option value="Health">Health</ion-option>
+                    <ion-option value="Hotel Or Casino">Hotel Or Casino</ion-option>
+                    <ion-option value="Investor Or Bank">Investor Or Bank</ion-option>
+                    <ion-option value="Mall Or Shopping Center">Mall Or Shopping Center</ion-option>
+                    <ion-option value="Music And Radio">Music And Radio</ion-option>
+                    <ion-option value="Restaurant Or Gas Station">Restaurant Or Gas Station</ion-option>
+                    <ion-option value="Software And Technology">Software And Technology</ion-option>
+                    <ion-option value="Sport">Sport</ion-option>
+                    <ion-option value="Supermarket">Supermarket</ion-option>
+                    <ion-option value="Travel">Travel</ion-option>
+                    <ion-option value="Theater">Theater</ion-option>
+                    <ion-option value="Wholesale And Hardware">Wholesale And Hardware</ion-option>
+                </ion-select>
+            </ion-item>
  
-  </ion-list>
+           <ion-item>
+                <ion-label floating>Mobile Number</ion-label>
+                <ion-input type="number"  [(ngModel)]="advert.mobileNumber" formControlName="mobileNumber" [class.invalid]="!slideOneForm.controls.mobileNumber.valid && (slideOneForm.controls.mobileNumber.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Email Address</ion-label>
+                <ion-input type="email"  [(ngModel)]="advert.emailAddress" formControlName="emailAddress" [class.invalid]="!slideOneForm.controls.emailAddress.valid && (slideOneForm.controls.emailAddress.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+             <ion-item>
+                <ion-label floating>Location</ion-label>
+                <ion-input type="text"  [(ngModel)]="advert.location" formControlName="location" [class.invalid]="!slideOneForm.controls.location.valid && (slideOneForm.controls.location.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+        </form> 
+    </ion-list>
+  </ion-slide>
 
-  <ion-list>
-    <ion-item>
-      
-      <ion-label>Start Date</ion-label>
-      <ion-datetime displayFormat="DD-MMM-YYYY" pickerFormat="DD-MMM-YYYY" [(ngModel)]="advert.dateStart"   formControlName="dateStart"></ion-datetime>
-    </ion-item>
+ 
+   <ion-slide>
+ 
+    <ion-list>
+ 
+        <form [formGroup]="slideTwoForm"> 
+            <ion-item [class.invalid]="!slideTwoForm.controls.dateStart.valid && (slideTwoForm.controls.dateStart.dirty || submitAttempt)">
+              <ion-label>Start Date</ion-label>
+              <ion-datetime displayFormat="DD-MMM-YYYY" pickerFormat="DD-MMM-YYYY" [(ngModel)]="advert.dateStart"   formControlName="dateStart"></ion-datetime>
+            </ion-item>
 
-    <ion-item>
+    <ion-item [class.invalid]="!slideTwoForm.controls.timeStart.valid && (slideTwoForm.controls.timeStart.dirty || submitAttempt)">
       <ion-label>Start Time</ion-label>
       <ion-datetime displayFormat="h:mm A" pickerFormat="h:mm A" [(ngModel)]="advert.timeStart" formControlName="timeStart"></ion-datetime>
     </ion-item>
 
-    <ion-item>
+    <ion-item [class.invalid]="!slideTwoForm.controls.dateEnd.valid && (slideTwoForm.controls.dateEnd.dirty || submitAttempt)">
       <ion-label>End Date</ion-label>
-      <ion-datetime displayFormat="DD MMM YYYY" [(ngModel)]="advert.dateEnd" formControlName="dateEnd"></ion-datetime>
+      <ion-datetime displayFormat="DD-MMM-YYYY" [(ngModel)]="advert.dateEnd" formControlName="dateEnd"></ion-datetime>
     </ion-item>
 
-    <ion-item>
+    <ion-item [class.invalid]="!slideTwoForm.controls.timeEnd.valid && (slideTwoForm.controls.timeEnd.dirty || submitAttempt)">
       <ion-label>End Time</ion-label>
-      <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="advert.timeEnd" formControlName="timeEnd"></ion-datetime>
+      <ion-datetime displayFormat="h:mm A" pickerFormat="h:mm A" [(ngModel)]="advert.timeEnd" formControlName="timeEnd"></ion-datetime>
     </ion-item>
-  </ion-list>
+ 
+        </form>
+ 
+    </ion-list>
 
-  <ion-list>
-    <ion-item>
-      <ion-label floating>Mobile Number</ion-label>
-      <ion-input type="number" [(ngModel)]="advert.mobileNumber" formControlName="mobileNumber"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label floating>Email Address</ion-label>
-      <ion-input type="email" [(ngModel)]="advert.emailAddress" formControlName="emailAddress"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label floating>Location</ion-label>
-      <ion-input type="text" [(ngModel)]="advert.location" formControlName="location"></ion-input>
-    </ion-item>
-  </ion-list>
+  </ion-slide>
 
-  <ion-list>
-    <ion-item>
-      <ion-label>Post as a business</ion-label>
-      <ion-toggle checked="false" [(ngModel)]="advert.postAsaBusiness" formControlName="postAsaBusiness" (ionChange)="postAsaBusinessChanged()"></ion-toggle>
-    </ion-item>
-    <ion-item *ngIf="advert.postAsaBusiness">
-      <ion-label floating>Business Name</ion-label>
-      <ion-input type="text" [(ngModel)]="advert.businessName" formControlName="businessName"></ion-input>
-    </ion-item>
-    <ion-item *ngIf="advert.postAsaBusiness">
-      <ion-label floating>Business Registration Number</ion-label>
-      <ion-input type="text" [(ngModel)]="advert.businessRegistrationNumber" formControlName="businessRegistrationNumber"></ion-input>
-    </ion-item>
-    <ion-item *ngIf="advert.postAsaBusiness">
-      <ion-label floating>Business Website</ion-label>
-      <ion-input type="text" [(ngModel)]="advert.businessWebsite" formControlName="businessWebsite"></ion-input>
-    </ion-item>
-  </ion-list>
-
-  <button ion-button color="dark" round type="submit">Post</button>
-   </form>
+   <ion-slide> 
+    <ion-list> 
+        <form [formGroup]="slideThreeForm"> 
+              <ion-item>
+          <ion-content padding>
+  <img src="{{pathForImage(lastImage)}}" style="width: 100%" [hidden]="lastImage === null">
+  <h3 [hidden]="lastImage !== null">Please Select Image!</h3>
 </ion-content>
+           <ion-footer>
+  <ion-toolbar color="primary">
+    <ion-buttons>
+      <button ion-button icon-left (click)="presentActionSheet()">
+        <ion-icon name="camera"></ion-icon>Select Image
+      </button>
+      <button ion-button icon-left (click)="uploadImage()" [disabled]="lastImage === null">
+        <ion-icon name="cloud-upload"></ion-icon>Upload
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+    </ion-item>
+        </form> 
+    </ion-list> 
+  </ion-slide>
 
-<style>
-  ion-list:first-child {
-    margin-top: 32px;
-  }
-  
-  ion-list + ion-list {
-    margin-top: 0;
-  }
-</style>
+  <ion-slide> 
+    <ion-list> 
+        <form [formGroup]="slideFourForm"> 
+            <ion-item>
+                <ion-label>Post as a business</ion-label>
+                <ion-toggle checked="false" [(ngModel)]="advert.postAsaBusiness" formControlName="postAsaBusiness" (ionChange)="postAsaBusinessChanged()"></ion-toggle>
+            </ion-item>
+            <ion-item *ngIf="advert.postAsaBusiness">
+                <ion-label floating>Business Name</ion-label>
+                <ion-input type="text" [(ngModel)]="advert.businessName" formControlName="businessName" [class.invalid]="!slideFourForm.controls.businessName.valid && (slideFourForm.controls.businessName.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="advert.postAsaBusiness">
+                <ion-label floating>Business Registration Number</ion-label>
+                <ion-input type="text" [(ngModel)]="advert.businessRegistrationNumber" formControlName="businessRegistrationNumber" [class.invalid]="!slideFourForm.controls.businessRegistrationNumber.valid && (slideFourForm.controls.businessRegistrationNumber.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="advert.postAsaBusiness">
+                <ion-label floating>Business Website</ion-label>
+                <ion-input type="text" [(ngModel)]="advert.businessWebsite" formControlName="businessWebsite" [class.invalid]="!slideFourForm.controls.businessWebsite.valid && (slideFourForm.controls.businessWebsite.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+        </form> 
+    </ion-list> 
 
-<script id="templates/form-errors.html" type="text/ng-template">  
-  <div class="form-error" ng-message="required">This field is required.</div>
-  <div class="form-error" ng-message="minlength">This field is must be at least 5 characters.</div>
-  <div class="form-error" ng-message="maxlength">This field is must be less than 50 characters</div>
-</script> 
+    <button ion-button block color="primary" (click)="save()">Post</button>
+  </ion-slide>
+</ion-slides>
+</ion-content>
