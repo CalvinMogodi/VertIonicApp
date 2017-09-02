@@ -1,12 +1,14 @@
 import {Component ,ViewChild} from '@angular/core';
-import {AngularFire, FirebaseListObservable} from 'angularfire2';
+import {AngularFire, FirebaseListObservable, FirebaseApp } from 'angularfire2';
 import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from '@angular/forms';
 import { NavController, ActionSheetController, ToastController, Platform, LoadingController, Loading ,AlertController} from 'ionic-angular';
-
+import * as firebase from 'firebase/app';
+import 'firebase/storage';
 import { File } from '@ionic-native/file';
 import { Transfer, TransferObject } from '@ionic-native/transfer';
 import { FilePath } from '@ionic-native/file-path';
 import { Camera } from '@ionic-native/camera';
+import { ImagePicker } from '@ionic-native/image-picker';
 
 declare var cordova: any;
 
@@ -16,14 +18,18 @@ declare var cordova: any;
 })
 
 export class PostAnAdvertPage {
+  selectImagePath =  null;
+  captureDataUrl: string;
+    loading: Loading;
    pages: Array<{title: string, component: any, icon: string}>;
+    adverts: FirebaseListObservable<any>;
 today = new Date();
 startTime = this.today.getHours()+":"+this.today.getMinutes();
 public advert = {
   name: undefined,
       category: undefined,
       dateStart: new Date().toISOString(), 
-      timeStart: this.startTime,
+      timeStart: this.startTime.toString(),
       dateEnd:  new Date().toISOString(), 
       timeEnd: '12:59', 
       mobileNumber: undefined, 
@@ -49,8 +55,8 @@ public advert = {
     submitAttempt: boolean = false;
    
  
-  constructor(public navCtrl: NavController,public alertCtrl: AlertController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController) {
-    
+  constructor(public navCtrl: NavController,public alertCtrl: AlertController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController, private imagePicker: ImagePicker ) {
+     this.adverts = af.database.list('/advert');
     this.slideOneForm = formBuilder.group({
         advertName: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
         mobileNumber: ['', Validators.compose([Validators.maxLength(10), Validators.minLength(10),Validators.pattern('[0-9]*'), Validators.required])],
@@ -138,6 +144,14 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
         toast.present();
         this.signupSlider.slideTo(1);
     }
+     else if(new Date(this.advert.dateEnd) < new Date(this.advert.dateEnd)){
+       let toast = this.toastCtrl.create({
+          message: 'End date can not be less than start date',
+          duration: 2000
+        });
+        toast.present();
+        this.signupSlider.slideTo(1);
+    }
     else if(!this.slideThreeForm.valid){
         this.signupSlider.slideTo(2);
     }else if(!this.slideFourForm.valid){
@@ -145,25 +159,33 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
     }
     else {
       let confirm = this.alertCtrl.create({
-      title: 'DIsclamer',
-      message: 'Do you agree to use this lightsaber to do good across the intergalactic galaxy?',
+      title: 'Disclaimer',
+      message: 'We have received a request for posting an ad.Our agents will contact you shotly and in no time, your ad will be online billbaord. DVERT.',
       buttons: [
         {
           text: 'Disagree',
           handler: () => {
+
           }
         },
         {
           text: 'Agree',
           handler: () => {
-           this.navCtrl.goToRoot("Billboard");
-            let toast = this.toastCtrl.create({
-                message: "Advert has been added successfully",
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
-             
+          this.loading = this.loadingCtrl.create({
+              content: 'Please wait...',
+          });
+          this.loading.present();
+          let storageRef = firebase.storage().ref();
+          // Create a timestamp as filename
+          const filename = Math.floor(Date.now() / 1000);
+          // Create a reference to 'images/todays-date.jpg'
+          const imageRef = storageRef.child(`images/${filename}.jpg`);
+          
+          imageRef.putString(this.captureDataUrl, firebase.storage.StringFormat.DATA_URL).then((snapshot)=> {
+            // Do something here when the data is succesfully uploaded!
+            this.loading.dismiss(); 
+            this.presentToast("Advert has been added successfully");
+          });                    
           }
         }
       ]
@@ -196,107 +218,31 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
 }
 
 lastImage: string = null;
-  loading: Loading;
-  public presentActionSheet() {
-    let toast = this.toastCtrl.create({
-          message: 'Take photo stated',
-          duration: 2000
-        });
-        toast.present();
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'Select Image Source',
-      buttons: [
-        {
-          text: 'Load from Library',
-          handler: () => {
-            this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
-          }
-        },
-        {
-          text: 'Use Camera',
-          handler: () => {
-            this.takePicture(this.camera.PictureSourceType.CAMERA);
-          }
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    actionSheet.present();
-  }
-
-  public takePicture(sourceType) {
+ 
+  public presentActionSheet() {   
   // Create options for the Camera Dialog
   var options = {
     quality: 100,
-    sourceType: sourceType,
     saveToPhotoAlbum: false,
-    correctOrientation: true
-  };
- 
-//this.camera.getPicture({
-  //   sourceType: this.camera.PictureSourceType.SAVEDPHOTOALBUM,
-    // destinationType: this.camera.DestinationType.DATA_URL
-    //}).then((imageData) => {
-     // this.base64Image = 'data:image/jpeg;base64,'+imageData;
-     //}, (err) => {
-      //console.log(err);
-    //});
-
-  // Get the data of an image
-  this.camera.getPicture(options).then((imagePath) => {
-    // Special handling for Android library
-    if (this.platform.is('android') && sourceType === this.camera.PictureSourceType.PHOTOLIBRARY) {
-      this.filePath.resolveNativePath(imagePath)
-        .then(filePath => {
-          let correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
-          let currentName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.lastIndexOf('?'));
-          this.copyFileToLocalDir(correctPath, currentName, this.createFileName());
-        });
-    } else {
-      var currentName = imagePath.substr(imagePath.lastIndexOf('/') + 1);
-      var correctPath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
-      this.copyFileToLocalDir(correctPath, currentName, this.createFileName());
-    }
-  }, (err) => {
-    this.presentToast('Error while selecting image.'+err);
-  });
+    correctOrientation: true,
+    maximumImagesCount: 1
+  }; 
+    this.imagePicker.getPictures(options).then((imagePath) => {
+        this.lastImage = imagePath;
+        this.selectImagePath =  imagePath;   
+}, (err) => {
+   this.presentToast('Error while selecting image.');
+   this.selectImagePath = 'assets/img/vert_logo.png'
+   this.captureDataUrl = 'data:image/jpeg;base64,' + this.selectImagePath;
+ });
 }
-// Create a new name for the image
-private createFileName() {
-  var d = new Date(),
-  n = d.getTime(),
-  newFileName =  n + ".jpg";
-  return newFileName;
-}
- 
-// Copy the image to a local folder
-private copyFileToLocalDir(namePath, currentName, newFileName) {
-  this.file.copyFile(namePath, currentName, cordova.file.dataDirectory, newFileName).then(success => {
-    this.lastImage = newFileName;
-  }, error => {
-    this.presentToast('Error while storing file.');
-  });
-}
- 
 private presentToast(text) {
   let toast = this.toastCtrl.create({
     message: text,
     duration: 3000,
-    position: 'top'
+    position: 'bottom'
   });
   toast.present();
-}
- 
-// Always get the accurate path to your apps folder
-public pathForImage(img) {
-  if (img === null) {
-    return '';
-  } else {
-    return cordova.file.dataDirectory + img;
-  }
 }
 }
   

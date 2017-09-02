@@ -14,6 +14,7 @@ import { PreferedCategoryPage } from '../pages/preferedcatetory/preferedcatetory
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { SQLite } from '@ionic-native/sqlite';
+import { ImagePicker } from '@ionic-native/image-picker';
 // Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
 import { File } from '@ionic-native/file';
@@ -68,6 +69,7 @@ export const firebaseConfig = {
     Camera,
     FilePath,
     SQLite,
+    ImagePicker,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
