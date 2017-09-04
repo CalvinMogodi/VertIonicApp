@@ -229,7 +229,8 @@ lastImage: string = null;
   }; 
     this.imagePicker.getPictures(options).then((imagePath) => {
         this.lastImage = imagePath;
-        this.selectImagePath =  imagePath;   
+        this.selectImagePath =  imagePath;  
+           this.captureDataUrl = 'data:image/jpeg;base64,' + imagePath; 
 }, (err) => {
    this.presentToast('Error while selecting image.');
    this.selectImagePath = 'assets/img/vert_logo.png'
