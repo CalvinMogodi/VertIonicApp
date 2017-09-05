@@ -10,5 +10,12 @@
 </ion-header>
 
 <ion-content padding>
-
+   <ion-list *ngFor="let catagory of catagories">
+     <ion-item>
+      <ion-toggle [(ngModel)]="catagory.isActive" [(checked)]="catagory.isActive" (ionChange)="saveCategory(catagory)"></ion-toggle>
+      <ion-label>
+        {{catagory.name}}
+      </ion-label>
+    </ion-item>
+   </ion-list>
 </ion-content>

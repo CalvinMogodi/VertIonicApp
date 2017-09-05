@@ -21,6 +21,9 @@ export class PostAnAdvertPage {
   selectImagePath =  null;
   captureDataUrl: string;
     loading: Loading;
+     public myPhotosRef: any;
+  public myPhoto: any;
+  public myPhotoURL: any;
    pages: Array<{title: string, component: any, icon: string}>;
     adverts: FirebaseListObservable<any>;
 today = new Date();
@@ -40,6 +43,7 @@ public advert = {
       businessRegistrationNumber: '', 
       businessWebsite: '', 
       isApproved: false,
+      likeCount: 0,
       imageRef: undefined,
 }
   @ViewChild('signupSlider') signupSlider: any;
@@ -57,6 +61,7 @@ public advert = {
  
   constructor(public navCtrl: NavController,public alertCtrl: AlertController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController, private imagePicker: ImagePicker ) {
      this.adverts = af.database.list('/advert');
+     this.myPhotosRef = firebase.storage().ref('/Photos/');
     this.slideOneForm = formBuilder.group({
         advertName: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
         mobileNumber: ['', Validators.compose([Validators.maxLength(10), Validators.minLength(10),Validators.pattern('[0-9]*'), Validators.required])],
@@ -181,11 +186,7 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
           // Create a reference to 'images/todays-date.jpg'
           const imageRef = storageRef.child(`images/${filename}.jpg`);
           
-          imageRef.putString(this.captureDataUrl, firebase.storage.StringFormat.DATA_URL).then((snapshot)=> {
-            // Do something here when the data is succesfully uploaded!
-            this.loading.dismiss(); 
-            this.presentToast("Advert has been added successfully");
-          });                    
+          imageRef.putString(this.captureDataUrl, 'base64', { contentType: 'image/png' })
           }
         }
       ]
@@ -193,6 +194,26 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
     confirm.present()
     }
   }
+
+  private uploadPhoto(): void {
+    this.myPhotosRef.child(this.generateUUID()).child('myPhoto.png')
+      .putString(this.myPhoto, 'base64', { contentType: 'image/png' })
+      .then((savedPicture) => {
+        this.myPhotoURL = savedPicture.downloadURL;
+          this.presentToast('done.');
+      });
+  }
+ 
+  private generateUUID(): any {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
+      var r = (d + Math.random() * 16) % 16 | 0;
+      d = Math.floor(d / 16);
+      return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+  }
+ 
 
     initializeItems() {
     this.items = [
@@ -228,6 +249,9 @@ lastImage: string = null;
     maximumImagesCount: 1
   }; 
     this.imagePicker.getPictures(options).then((imagePath) => {
+      this.presentToast('Upload started.');
+      this.myPhoto = imagePath;
+      //this.uploadPhoto();
         this.lastImage = imagePath;
         this.selectImagePath =  imagePath;  
            this.captureDataUrl = 'data:image/jpeg;base64,' + imagePath; 

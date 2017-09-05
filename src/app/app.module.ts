@@ -7,6 +7,7 @@ import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import { AboutPage } from '../pages/about/about';
 import { FavouritePage } from '../pages/favourite/favourite';
+import { AdvertDetailsPage } from '../pages/advertDetails/advertDetails';
 import { PostAnAdvertPage } from '../pages/postAnAdvert/postAnAdvert';
 import { HelpPage } from '../pages/help/help';
 import { ContactUsPage } from '../pages/contactUs/contactUs';
@@ -41,7 +42,8 @@ export const firebaseConfig = {
     HelpPage,
     FavouritePage,
     ContactUsPage,
-    TabsPage
+    TabsPage,
+    AdvertDetailsPage
   ],
   imports: [
     BrowserModule,
@@ -59,7 +61,8 @@ export const firebaseConfig = {
     HelpPage,
     FavouritePage,
     ContactUsPage,
-    TabsPage
+    TabsPage,
+    AdvertDetailsPage
   ],
   providers: [
     StatusBar,

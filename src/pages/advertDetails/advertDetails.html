@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-navbar>
+      <ion-icon name="back"></ion-icon>
+    <ion-title>
+      Advert Details
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+<ion-card>
+  <ion-item>
+      <ion-avatar item-start>
+        <img src="assets/img/bsLogo.png">
+    </ion-avatar>
+    <h2>{{advert.customerDisplayName}} ({{advert.name}})</h2>
+  </ion-item>
+  <ion-item-group>
+    <ion-item-divider color="light">Information</ion-item-divider>
+    <ion-item>Category <ion-note item-end>{{advert.category}}</ion-note></ion-item>
+    <ion-item><h2>Location</h2> <p>{{advert.location}}</p></ion-item>
+  </ion-item-group>
+   <ion-item-group>
+    <ion-item-divider color="light">Date and Time</ion-item-divider>
+    <ion-item>Date <ion-note item-end>{{advert.dateStart}} - {{advert.dateEnd}}</ion-note></ion-item>
+    <ion-item>Time <ion-note item-end>{{advert.timeStart}} - {{advert.timeEnd}}</ion-note></ion-item>
+  </ion-item-group>
+   <ion-item-group>
+    <ion-item-divider color="light">Contact Deatils</ion-item-divider>
+    <ion-item>Email <ion-note item-end>{{advert.emailAddress}}</ion-note></ion-item>
+    <ion-item>Phone  <ion-note item-end>{{advert.mobileNumber}}</ion-note></ion-item>
+    <ion-item>Website  <ion-note item-end>{{advert.businessWebsite}}</ion-note></ion-item>
+  </ion-item-group>
+
+  <ion-row *ngIf="advert.isFavourite">
+    <ion-col align-self-center text-center>
+      <button color="danger" ion-button icon-left clear small (click)="deleteAdvert()">
+        <div>Delete</div>
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-card>
+</ion-content>
