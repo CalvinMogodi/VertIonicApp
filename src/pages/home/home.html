@@ -10,8 +10,8 @@
 <ion-content padding>
    <ion-list *ngFor="let advert of adverts">
       <ion-card>      
- <ion-item>
-          <h2>{{advert.customerDisplayName}}</h2>
+        <ion-item align-self-center text-center>
+          <h2>{{advert.userDisplayName}}</h2>
         </ion-item>
         <img src="assets/img/bsLogo.png">
   <ion-card-content>
@@ -19,8 +19,8 @@
   </ion-card-content>
   <ion-row>
     <ion-col>
-      <button ion-button icon-left clear small (click)="likeAdvert(advert)">
-        <ion-icon name="thumbs-up"></ion-icon>
+      <button [ngStyle]="{'color':advert.likedColor}" ion-button icon-left clear small (click)="likeAdvert(advert)">
+        <ion-icon name="star" ></ion-icon>
         <div>{{advert.likeCount}}</div>
       </button>
     </ion-col>

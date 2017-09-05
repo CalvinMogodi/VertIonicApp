@@ -43,7 +43,7 @@ export const firebaseConfig = {
     FavouritePage,
     ContactUsPage,
     TabsPage,
-    AdvertDetailsPage
+    AdvertDetailsPage,
   ],
   imports: [
     BrowserModule,
