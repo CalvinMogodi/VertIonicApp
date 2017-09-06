@@ -1,7 +1,7 @@
 import {Component ,ViewChild} from '@angular/core';
 import {AngularFire, FirebaseListObservable, FirebaseApp } from 'angularfire2';
 import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from '@angular/forms';
-import { NavController, ActionSheetController, ToastController, Platform, LoadingController, Loading ,AlertController} from 'ionic-angular';
+import { NavController, ActionSheetController, ToastController, Platform, LoadingController, Loading ,AlertController, ModalController} from 'ionic-angular';
 import * as firebase from 'firebase/app';
 import 'firebase/storage';
 import { File } from '@ionic-native/file';
@@ -9,6 +9,7 @@ import { Transfer, TransferObject } from '@ionic-native/transfer';
 import { FilePath } from '@ionic-native/file-path';
 import { Camera } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
+import {AutocompletePage} from '../autocomplete/autocomplete';
 
 declare var cordova: any;
 
@@ -18,6 +19,7 @@ declare var cordova: any;
 })
 
 export class PostAnAdvertPage {
+   address;
   selectImagePath =  null;
   captureDataUrl: string;
     loading: Loading;
@@ -29,7 +31,7 @@ export class PostAnAdvertPage {
 today = new Date();
 startTime = this.today.getHours()+":"+this.today.getMinutes();
 public advert = {
-  name: undefined,
+  advertName: undefined,
       category: undefined,
       dateStart: new Date().toISOString(), 
       timeStart: this.startTime.toString(),
@@ -40,11 +42,14 @@ public advert = {
       location: undefined, 
       postAsaBusiness: false, 
       businessName: '', 
-      businessRegistrationNumber: '', 
       businessWebsite: '', 
       isApproved: false,
       likeCount: 0,
-      imageRef: undefined,
+      imageRef: '',
+      image: '',
+      userDisplayName: undefined,
+      discription: undefined,
+      businessPassword: ''
 }
   @ViewChild('signupSlider') signupSlider: any;
     searchQuery: string = '';
@@ -55,17 +60,20 @@ public advert = {
     slideFourForm: FormGroup;
     businessName: AbstractControl;
     businessWebsite: AbstractControl;
-    businessRegistrationNumber: AbstractControl;
+    businessPassword: AbstractControl;
     submitAttempt: boolean = false;
    
  
-  constructor(public navCtrl: NavController,public alertCtrl: AlertController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController, private imagePicker: ImagePicker ) {
+  constructor(public navCtrl: NavController,public alertCtrl: AlertController, private modalCtrl:ModalController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController, private imagePicker: ImagePicker ) {
      this.adverts = af.database.list('/advert');
+     this.address = {
+      place: ''
+    };
      this.myPhotosRef = firebase.storage().ref('/Photos/');
     this.slideOneForm = formBuilder.group({
         advertName: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
         mobileNumber: ['', Validators.compose([Validators.maxLength(10), Validators.minLength(10),Validators.pattern('[0-9]*'), Validators.required])],
-        emailAddress: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
+       discription: ['', Validators.compose([Validators.minLength(2), Validators.required])],
         location: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
         category: ['', Validators.compose([Validators.required])],    
     });
@@ -76,18 +84,28 @@ public advert = {
         timeStart: ['', Validators.compose([Validators.required])],
     }); 
     this.slideFourForm = formBuilder.group({
+        emailAddress: ['', Validators.compose([Validators.minLength(2), Validators.required])],
+        userDisplayName: ['', Validators.compose([Validators.minLength(2), Validators.required])],
         postAsaBusiness: [false],
         businessName: [''],
-        businessRegistrationNumber: [''],
+        businessPassword: [''],
         businessWebsite: [''],
     });
      this.businessName = this.slideFourForm.controls['businessName'];   
      this.businessWebsite = this.slideFourForm.controls['businessWebsite'];
-     this.businessRegistrationNumber = this.slideFourForm.controls['businessRegistrationNumber'];
+     this.businessPassword = this.slideFourForm.controls['businessPassword'];
      this.slideThreeForm = formBuilder.group({
         imageIsLoaded: [false],
          imageRef: [""],
     });
+  }
+  showAddressModal () {
+    let modal = this.modalCtrl.create(AutocompletePage);
+    let me = this;
+    modal.onDidDismiss(data => {
+      this.address.place = data;
+    });
+    modal.present();
   }
 
  next(){
@@ -100,15 +118,15 @@ public advert = {
     postAsaBusinessChanged(){
       if(this.advert.postAsaBusiness){
         this.businessName.setValidators([Validators.required]);
-          this.businessRegistrationNumber.setValidators([Validators.required]);
+          this.businessPassword.setValidators([Validators.required]);
            this.businessWebsite.setValidators([Validators.required]);
             this.businessName.enable(false);
-          this.businessRegistrationNumber.enable(false);
+          this.businessPassword.enable(false);
            this.businessWebsite.enable(false);
       }
       else{
          this.businessName.disable(true);
-          this.businessRegistrationNumber.disable(true);
+          this.businessPassword.disable(true);
            this.businessWebsite.disable(true);
       }
     }
@@ -180,13 +198,20 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
               content: 'Please wait...',
           });
           this.loading.present();
-          let storageRef = firebase.storage().ref();
+         // let storageRef = firebase.storage().ref();
           // Create a timestamp as filename
           const filename = Math.floor(Date.now() / 1000);
           // Create a reference to 'images/todays-date.jpg'
-          const imageRef = storageRef.child(`images/${filename}.jpg`);
-          
+         // const imageRef = storageRef.child(`images/${filename}.jpg`);
+          this.presentToast(this.captureDataUrl);
+          let storageRef = firebase.storage().ref();
+          let imageName = this.generateUUID();
+          let imageRef = storageRef.child(`images/${imageName}.jpg`);
+          imageRef.putString(this.captureDataUrl, 'data_url');
+
+          this.adverts.push(this.advert);
           imageRef.putString(this.captureDataUrl, 'base64', { contentType: 'image/png' })
+          confirm.dismiss()
           }
         }
       ]

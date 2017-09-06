@@ -1,5 +1,5 @@
 import { Component ,Input} from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { NavController, Platform,NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AdvertDetailsPage } from '../advertDetails/advertDetails';
 
@@ -10,8 +10,16 @@ import { AdvertDetailsPage } from '../advertDetails/advertDetails';
 export class FavouritePage {
   public adverts: Array<Object>;
   public thisadvert: any;
-  constructor(public navCtrl: NavController, private platform: Platform,private storage: Storage) {
+  constructor(public navCtrl: NavController,navParams: NavParams, private platform: Platform,private storage: Storage) {
 this.navCtrl = navCtrl;
+if (navParams.data){
+    if(this.adverts){
+        if(this.adverts.length > 0){
+            this.adverts.splice(navParams.data);
+        }
+    }
+}
+
   this.platform.ready().then(() => {
         this.storage.keys().then((data) => {
             for(var i = 0; i <= data.length; i++){

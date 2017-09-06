@@ -1,6 +1,12 @@
 .ios, .md {
  
     page-postAnAdvert {
+        .keyboard-open .tabs{
+  display:none;
+  }
+.keyboard-open .has-tabs{
+ bottom:0;
+ }
  
         p {
             font-size: 0.8em;

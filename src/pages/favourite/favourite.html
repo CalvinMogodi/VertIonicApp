@@ -13,11 +13,12 @@
   <ion-list  *ngFor="let advert of adverts">
 <ion-card>
   <ion-item>
-    <h2>Customer Name</h2>
+     <h2>{{advert.userDisplayName}}</h2>
+     <p>({{advert.dateStart}} - {{advert.dateEnd}})</p>
   </ion-item>
   <img src="assets/img/bsLogo.png">
   <ion-card-content>
-    <p>Wait a minute. Wait a minute, Doc. Uhhh... Are you telling me that you built a time machine... out of a DeLorean?! Whoa. This is heavy.</p>
+    <p>{{advert.description}}</p>
   </ion-card-content>
   <ion-row>
     <ion-col align-self-center text-center>

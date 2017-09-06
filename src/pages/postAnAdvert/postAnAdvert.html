@@ -13,10 +13,15 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content>
-<ion-slides #signupSlider pager>
+<ion-content padding>
+<ion-slides #signupSlider>
   <ion-slide>
     <ion-list>
+        <ion-list>
+  <ion-item>
+    <ion-input (click)="showAddressModal()" [(ngModel)]="address.place"type="text" placeholder="Pick an address">              </ion-input>
+  </ion-item>
+</ion-list>
         <form [formGroup]="slideOneForm">
             <ion-item>
                 <ion-label floating>Advert Name</ion-label>
@@ -46,18 +51,18 @@
                     <ion-option value="Wholesale And Hardware">Wholesale And Hardware</ion-option>
                 </ion-select>
             </ion-item>
- 
+
            <ion-item>
                 <ion-label floating>Mobile Number</ion-label>
                 <ion-input type="number"  [(ngModel)]="advert.mobileNumber" formControlName="mobileNumber" [class.invalid]="!slideOneForm.controls.mobileNumber.valid && (slideOneForm.controls.mobileNumber.dirty || submitAttempt)"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Email Address</ion-label>
-                <ion-input type="email"  [(ngModel)]="advert.emailAddress" formControlName="emailAddress" [class.invalid]="!slideOneForm.controls.emailAddress.valid && (slideOneForm.controls.emailAddress.dirty || submitAttempt)"></ion-input>
-            </ion-item>
+            </ion-item>            
              <ion-item>
                 <ion-label floating>Location</ion-label>
                 <ion-input type="text"  [(ngModel)]="advert.location" formControlName="location" [class.invalid]="!slideOneForm.controls.location.valid && (slideOneForm.controls.location.dirty || submitAttempt)"></ion-input>
+            </ion-item>            
+            <ion-item>
+                <ion-label floating>Discription</ion-label>                
+                <ion-input type="text"  [(ngModel)]="advert.discription" formControlName="discription" [class.invalid]="!slideOneForm.controls.discription.valid && (slideOneForm.controls.discription.dirty || submitAttempt)"></ion-input>
             </ion-item>
         </form> 
     </ion-list>
@@ -105,8 +110,7 @@
       </button>
     </ion-buttons>
   </ion-toolbar>
-                <ion-label floating>Advert Name</ion-label>
-                <img [(src)]="selectImagePath" style="width: 100%">
+                <img *ngIf="selectImagePath" [(src)]="selectImagePath" style="width: 100%">
         </form> 
     </ion-list> 
   </ion-slide>
@@ -114,6 +118,14 @@
   <ion-slide> 
     <ion-list> 
         <form [formGroup]="slideFourForm"> 
+             <ion-item>
+                <ion-label floating>Customer Display Name</ion-label>
+                <ion-input type="text" [(ngModel)]="advert.userDisplayName" formControlName="userDisplayName" [class.invalid]="!slideFourForm.controls.userDisplayName.valid && (slideFourForm.controls.userDisplayName.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Email Address</ion-label>
+                <ion-input type="email"  [(ngModel)]="advert.emailAddress" formControlName="emailAddress" [class.invalid]="!slideFourForm.controls.emailAddress.valid && (slideFourForm.controls.emailAddress.dirty || submitAttempt)"></ion-input>
+            </ion-item>
             <ion-item>
                 <ion-label>Post as a business</ion-label>
                 <ion-toggle checked="false" [(ngModel)]="advert.postAsaBusiness" formControlName="postAsaBusiness" (ionChange)="postAsaBusinessChanged()"></ion-toggle>
@@ -121,14 +133,14 @@
             <ion-item *ngIf="advert.postAsaBusiness">
                 <ion-label floating>Business Name</ion-label>
                 <ion-input type="text" [(ngModel)]="advert.businessName" formControlName="businessName" [class.invalid]="!slideFourForm.controls.businessName.valid && (slideFourForm.controls.businessName.dirty || submitAttempt)"></ion-input>
-            </ion-item>
-            <ion-item *ngIf="advert.postAsaBusiness">
-                <ion-label floating>Business Registration Number</ion-label>
-                <ion-input type="text" [(ngModel)]="advert.businessRegistrationNumber" formControlName="businessRegistrationNumber" [class.invalid]="!slideFourForm.controls.businessRegistrationNumber.valid && (slideFourForm.controls.businessRegistrationNumber.dirty || submitAttempt)"></ion-input>
-            </ion-item>
+            </ion-item>          
             <ion-item *ngIf="advert.postAsaBusiness">
                 <ion-label floating>Business Website</ion-label>
                 <ion-input type="text" [(ngModel)]="advert.businessWebsite" formControlName="businessWebsite" [class.invalid]="!slideFourForm.controls.businessWebsite.valid && (slideFourForm.controls.businessWebsite.dirty || submitAttempt)"></ion-input>
+            </ion-item>
+              <ion-item *ngIf="advert.postAsaBusiness">
+                <ion-label floating>Password</ion-label>
+                <ion-input type="password" [(ngModel)]="advert.businessPassword" formControlName="businessPassword" [class.invalid]="!slideFourForm.controls.businessPassword.valid && (slideFourForm.controls.businessPassword.dirty || submitAttempt)"></ion-input>
             </ion-item>
         </form> 
     </ion-list> 
