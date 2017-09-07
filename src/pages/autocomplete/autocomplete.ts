@@ -39,12 +39,16 @@ export class AutocompletePage {
       return;
     }
     let me = this;
-    this.service.getPlacePredictions({ input: this.autocomplete.query,  componentRestrictions: {country: 'TH'} }, function (predictions, status) {
+    // componentRestrictions: {country: 'ZAR'}
+    this.service.getPlacePredictions({ input: this.autocomplete.query,  }, function (predictions, status) {
       me.autocompleteItems = []; 
       me.zone.run(function () {
-        predictions.forEach(function (prediction) {
-          me.autocompleteItems.push(prediction.description);
+        if(predictions != null){
+          predictions.forEach(function (prediction) {
+            me.autocompleteItems.push(prediction.description);
         });
+        }
+       
       });
     });
   }
@@ -55,7 +59,6 @@ export class AutocompletePage {
     geocoder.geocode({ 'address': address }, (results, status) => {
     this.latitude = results[0].geometry.location.lat();
     this.longitude = results[0].geometry.location.lng();
-    alert("lat: " + this.latitude + ", long: " + this.longitude);
    });
  }
 }

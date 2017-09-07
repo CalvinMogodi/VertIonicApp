@@ -7,9 +7,11 @@ import 'firebase/storage';
 import { File } from '@ionic-native/file';
 import { Transfer, TransferObject } from '@ionic-native/transfer';
 import { FilePath } from '@ionic-native/file-path';
-import { Camera } from '@ionic-native/camera';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
 import {AutocompletePage} from '../autocomplete/autocomplete';
+import { HomePage } from '../home/home';
+import { GlobalValidator} from '../validators/username'
 
 declare var cordova: any;
 
@@ -19,7 +21,6 @@ declare var cordova: any;
 })
 
 export class PostAnAdvertPage {
-   address;
   selectImagePath =  null;
   captureDataUrl: string;
     loading: Loading;
@@ -46,7 +47,6 @@ public advert = {
       isApproved: false,
       likeCount: 0,
       imageRef: '',
-      image: '',
       userDisplayName: undefined,
       discription: undefined,
       businessPassword: ''
@@ -64,17 +64,15 @@ public advert = {
     submitAttempt: boolean = false;
    
  
-  constructor(public navCtrl: NavController,public alertCtrl: AlertController, private modalCtrl:ModalController, public formBuilder: FormBuilder,  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController, private imagePicker: ImagePicker ) {
+  constructor(public navCtrl: NavController ,public alertCtrl: AlertController, private modalCtrl:ModalController, public formBuilder: FormBuilder,public  af: AngularFire, private camera: Camera, private transfer: Transfer, private file: File, private filePath: FilePath, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, public platform: Platform, public loadingCtrl: LoadingController, private imagePicker: ImagePicker ) {
      this.adverts = af.database.list('/advert');
-     this.address = {
-      place: ''
-    };
+     
      this.myPhotosRef = firebase.storage().ref('/Photos/');
     this.slideOneForm = formBuilder.group({
-        advertName: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
+        advertName: ['', Validators.compose([Validators.minLength(2), Validators.required])],
         mobileNumber: ['', Validators.compose([Validators.maxLength(10), Validators.minLength(10),Validators.pattern('[0-9]*'), Validators.required])],
        discription: ['', Validators.compose([Validators.minLength(2), Validators.required])],
-        location: ['', Validators.compose([Validators.minLength(2), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
+        location: ['', Validators.compose([Validators.minLength(2), Validators.required])],
         category: ['', Validators.compose([Validators.required])],    
     });
     this.slideTwoForm = formBuilder.group({
@@ -84,7 +82,7 @@ public advert = {
         timeStart: ['', Validators.compose([Validators.required])],
     }); 
     this.slideFourForm = formBuilder.group({
-        emailAddress: ['', Validators.compose([Validators.minLength(2), Validators.required])],
+        emailAddress: ['', Validators.compose([Validators.minLength(2), Validators.required,Validators.pattern(GlobalValidator.EMAIL_REGEX)])],
         userDisplayName: ['', Validators.compose([Validators.minLength(2), Validators.required])],
         postAsaBusiness: [false],
         businessName: [''],
@@ -103,7 +101,7 @@ public advert = {
     let modal = this.modalCtrl.create(AutocompletePage);
     let me = this;
     modal.onDidDismiss(data => {
-      this.address.place = data;
+      this.advert.location = data;
     });
     modal.present();
   }
@@ -198,20 +196,62 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
               content: 'Please wait...',
           });
           this.loading.present();
+          if(this.advert.postAsaBusiness){
+            this.af.database.list('/user').forEach(data => {
+              var user = null;
+                for(var index = 0; index < data.length; index ++) {              
+                  if(data[index].username.toLowerCase() == this.advert.emailAddress && data[index].businessName.toLowerCase() == this.advert.userDisplayName && data[index].businessPassword == this.advert.businessPassword){
+                    user = data[index];
+                    break;
+                  }
+              }
+            if(user != null){
+                 this.adverts.push(this.advert);
+                  confirm.dismiss();
+                  this.presentToast('Your advert is added successfully');
+                  this.navCtrl.push(HomePage);
+            }else{
+              this.presentToast("Your details do not match with the business details.");
+            }
+            });
+          }else{
+              this.adverts.push(this.advert);
+              confirm.dismiss();
+              this.presentToast('Your advert is added successfully');
+              this.navCtrl.push(HomePage);
+          }
          // let storageRef = firebase.storage().ref();
           // Create a timestamp as filename
           const filename = Math.floor(Date.now() / 1000);
           // Create a reference to 'images/todays-date.jpg'
          // const imageRef = storageRef.child(`images/${filename}.jpg`);
+         
           this.presentToast(this.captureDataUrl);
           let storageRef = firebase.storage().ref();
           let imageName = this.generateUUID();
-          let imageRef = storageRef.child(`images/${imageName}.jpg`);
-          imageRef.putString(this.captureDataUrl, 'data_url');
+         
+           this.file.readAsArrayBuffer(this.captureDataUrl, name)
+                    .then(function (success) {
+                     var blob = new Blob([success], {type: "image/jpeg"});
+                      let imageRef = storageRef.child(`images/${imageName}.jpg`).putString(this.captureDataUrl);
+          imageRef.on(firebase.storage.TaskEvent.STATE_CHANGED,
+      (snapshot) =>  {
+        // upload in progress
+         
+      },
+      (error) => {
+        // upload failed
+        this.presentToast('upload failed');
+        console.log(error)
+      },
+      () => {
+        // upload success
+        this.presentToast('upload success');
+      }
+                    
+    );})
 
-          this.adverts.push(this.advert);
-          imageRef.putString(this.captureDataUrl, 'base64', { contentType: 'image/png' })
-          confirm.dismiss()
+         
           }
         }
       ]
@@ -240,46 +280,26 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
   }
  
 
-    initializeItems() {
-    this.items = [
-      'Amsterdam',
-      'Bogota',
-    ];
-  }
-
-  getItems(ev: any) {
-    // Reset items back to all of the items
-    this.initializeItems();
-
-    // set val to the value of the searchbar
-    let val = ev.target.value;
-
-    // if the value is an empty string don't filter the items
-    if (val && val.trim() != '') {
-      this.items = this.items.filter((item) => {
-        return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      })
-    }
- 
-}
 
 lastImage: string = null;
  
   public presentActionSheet() {   
   // Create options for the Camera Dialog
-  var options = {
-    quality: 100,
-    saveToPhotoAlbum: false,
-    correctOrientation: true,
-    maximumImagesCount: 1
-  }; 
+  var options =  {
+  quality: 100,
+   outputType: 0,
+     maximumImagesCount: 1,
+  
+}
     this.imagePicker.getPictures(options).then((imagePath) => {
       this.presentToast('Upload started.');
       this.myPhoto = imagePath;
       //this.uploadPhoto();
         this.lastImage = imagePath;
-        this.selectImagePath =  imagePath;  
-           this.captureDataUrl = 'data:image/jpeg;base64,' + imagePath; 
+        this.selectImagePath =  imagePath; 
+       this.captureDataUrl = 'data:image/jpeg;base64,' + imagePath;
+           this.captureDataUrl = imagePath; 
+           
 }, (err) => {
    this.presentToast('Error while selecting image.');
    this.selectImagePath = 'assets/img/vert_logo.png'
