@@ -14,9 +14,9 @@
           <h2>{{advert.userDisplayName}}</h2>
            <p>({{advert.dateStart}} - {{advert.dateEnd}})</p>
         </ion-item>
-        <img src="assets/img/bsLogo.png">
+        <img [(src)]="advert.imageRef">
   <ion-card-content>
-    <p>{{advert.description}}</p>
+    <p>{{advert.discription}}</p>
   </ion-card-content>
   <ion-row>
     <ion-col>

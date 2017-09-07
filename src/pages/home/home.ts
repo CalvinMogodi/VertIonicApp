@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { NavController , LoadingController, Loading, AlertController, ToastController } from 'ionic-angular';
-import {AngularFire, FirebaseListObservable, AngularFireDatabase, FirebaseObjectObservable} from 'angularfire2';
+import {FirebaseApp, AngularFire, FirebaseListObservable, AngularFireDatabase, FirebaseObjectObservable} from 'angularfire2';
 import { AdvertDetailsPage } from '../advertDetails/advertDetails';
 import { PreferedCategoryPage } from '../preferedcatetory/preferedcatetory';
 import {Network} from '@ionic-native/network'
+import * as firebase from 'firebase/app';
+import 'firebase/storage';
 
 import { App, MenuController } from 'ionic-angular';
 
@@ -15,7 +17,8 @@ import { App, MenuController } from 'ionic-angular';
 })
 
 export class HomePage {
-  public sqlitedb: SQLite
+  public firebase:any;
+  public storageRef: any
   public adverts : any[];
   public advertsToUpdata: FirebaseListObservable<any>;
   public trialSettings: FirebaseListObservable<any>;
@@ -31,22 +34,9 @@ export class HomePage {
    // });
    // confirm.present()
    //})
-     //af.database.list('/trialSetting').forEach(data => { 
-     
-      //this.getSetting().then(data => {
-         this.trialSettings = af.database.list(`/trialSetting`);
-         
-       //.update(data =>{
-      
-          
-        
-        //var thisData = data;
-     // for (var t = 0; t < thisData.length; t++) { 
-        
-      //  break;
-     // }
-     //});
    
+this.firebase = firebase;   
+         this.trialSettings = af.database.list(`/trialSetting`);
     this.storage.get("catagories").then((val) => {
      var hasSetCategories = false;
      var userPreferedCategories = [];
@@ -83,20 +73,22 @@ export class HomePage {
     });
     confirm.present();
      }else{
-       this.advertsToUpdata = af.database.list('/avert'); 
+       this.advertsToUpdata = af.database.list('/advert'); 
         this.loading = this.loadingCtrl.create({
           content: 'Please wait...',
         });
         this.loading.present();
         this.storage.keys().then((favouritesData) => {
-        af.database.list('/avert').subscribe(data => { 
+        af.database.list('/advert').subscribe(data => { 
           var today = new Date();    
           var advertDate = [];
+         
           for(var i = 0; i <= data.length; i ++)
           {
-            if(data[i] != null){
+            
+            if(data[i] != null){  
               var startDate = new Date(data[i].dateStart);
-              if(today < startDate && data[i].isApproved == true && userPreferedCategories.indexOf(data[i].category > -1)){
+              if(today < startDate && data[i].isApproved == true && userPreferedCategories.indexOf(data[i].category) > -1){
                   data[i].likedColor = 'gray';
                 
                   var id = data[i].$key;
@@ -109,7 +101,18 @@ export class HomePage {
             }
                
           }          
-          this.adverts = advertDate;
+         /// this.storageRef = firebase.storage().ref().child('/images/49fc8543-0a97-4b70-a7c4.jpg');
+         //           this.storageRef.getDownloadURL().then(url =>{
+                      this.adverts = advertDate;
+           ////           for(var ds = 0; ds <   this.adverts.length ;ds++){
+           //           if(this.adverts[ds] != null){
+            //            this.adverts[ds].imageRef = this.dataURItoBlob(url);
+            //        }
+           //           }
+                    
+            //        }
+            //        );
+        
            this.loading.dismiss();
            this.updateSetting()
            });
@@ -119,15 +122,36 @@ export class HomePage {
     });
   }
 
+  public dataURItoBlob(dataURI) {
+  // convert base64 to raw binary data held in a string
+  // doesn't handle URLEncoded DataURIs - see stack overflow answer #6850276 for code that does this
+  var byteString = atob(dataURI.split(',')[1]);
+ 
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+ 
+  // write the bytes of the string to an ArrayBuffer
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+ 
+  // write the ArrayBuffer to a blob
+  var blob = new Blob([ab], {type: mimeString});
+  return blob;
+}
 updateSetting() {
   var sdfsd = this.afDatabase.object(`/trialSetting/123456789`);
   this.trialSettings.forEach(data => {
-if(data[0].totalCount < data[0].limit ){
-          this.storage.set('canPostForFree', true);
-         var newTotalCount = data[0].totalCount + 1;
-         this.trialSetting = data[0];
-          sdfsd.update({totalCount: newTotalCount});
-           let congratulationConfirm = this.alertCtrl.create({
+  if(data[0].totalCount < data[0].limit ){
+    var canPostForFree = this.storage.get('canPostForFree').then((val) => {
+      if(val != true){
+        this.storage.set('canPostForFree', true);
+        var newTotalCount = data[0].totalCount + 1;
+        this.trialSetting = data[0];
+        sdfsd.update({totalCount: newTotalCount});
+        let congratulationConfirm = this.alertCtrl.create({
             title: 'Congratulation, You have won',
             message: '1. Free consulatation to help plan your successful idea and turn it into its physical equivalent. 2. A once off free advertisement to initially market your product/service.',
             buttons: [
@@ -139,12 +163,13 @@ if(data[0].totalCount < data[0].limit ){
           });
           congratulationConfirm.present();
        }
+    });
+      }
   });
    
 }
  
  likeAdvert(advert){
-     advert.likedColor = 'blue';
     advert.likedColor = 'blue';
     this.storage.get(advert.$key).then((val) => {
       if(val == null){

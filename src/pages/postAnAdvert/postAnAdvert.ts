@@ -138,8 +138,8 @@ public advert = {
     }
   save(){
 
-var startDate = this.getDateOnly(new Date(this.advert.dateStart));
-var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
+     this.advert.dateStart = this.getDateOnly(new Date(this.advert.dateStart));
+     this.advert.dateEnd = this.getDateOnly(new Date(this.advert.dateEnd));
  
     this.submitAttempt = true;
  
@@ -196,7 +196,24 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
               content: 'Please wait...',
           });
           this.loading.present();
-          if(this.advert.postAsaBusiness){
+          const filename = Math.floor(Date.now() / 1000);
+          let storageRef = firebase.storage().ref();
+          let imageName = this.generateUUID();         
+                      let imageRef = storageRef.child(`images/${imageName}.jpg`).putString(this.captureDataUrl.substring(23) , 'base64');
+          imageRef.on(firebase.storage.TaskEvent.STATE_CHANGED,
+      (snapshot) =>  {
+        // upload in progress
+          this.presentToast('upload progress');
+      },
+      (error) => {
+        // upload failed
+        this.presentToast('upload failed '+ error);
+        console.log(error)
+      },
+      () => {
+        // upload success
+        this.presentToast('upload success');
+         if(this.advert.postAsaBusiness){
             this.af.database.list('/user').forEach(data => {
               var user = null;
                 for(var index = 0; index < data.length; index ++) {              
@@ -210,7 +227,7 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
                   confirm.dismiss();
                    this.loading.dismiss();
                   this.presentToast('Your advert is added successfully');
-                  this.navCtrl.push(HomePage);
+                  this.navCtrl.goToRoot(HomePage);
             }else{
               this.presentToast("Your details do not match with the business details.");
               confirm.dismiss();
@@ -222,38 +239,11 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
               confirm.dismiss();
               this.loading.dismiss();
               this.presentToast('Your advert is added successfully');
-              this.navCtrl.push(HomePage);
+              this.navCtrl.goToRoot(HomePage);
           }
-         // let storageRef = firebase.storage().ref();
-          // Create a timestamp as filename
-          const filename = Math.floor(Date.now() / 1000);
-          // Create a reference to 'images/todays-date.jpg'
-         // const imageRef = storageRef.child(`images/${filename}.jpg`);
-         
-          this.presentToast(this.captureDataUrl);
-          let storageRef = firebase.storage().ref();
-          let imageName = this.generateUUID();
-         
-           this.file.readAsArrayBuffer(this.captureDataUrl, name)
-                    .then(function (success) {
-                     var blob = new Blob([success], {type: "image/jpeg"});
-                      let imageRef = storageRef.child(`images/${imageName}.jpg`).putString(this.captureDataUrl);
-          imageRef.on(firebase.storage.TaskEvent.STATE_CHANGED,
-      (snapshot) =>  {
-        // upload in progress
-         
-      },
-      (error) => {
-        // upload failed
-        this.presentToast('upload failed');
-        console.log(error)
-      },
-      () => {
-        // upload success
-        this.presentToast('upload success');
       }
                     
-    );})
+    );
 
          
           }
@@ -286,7 +276,20 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
 
 
 lastImage: string = null;
- 
+ encodeImageUri(imageUri)
+{
+     var c=document.createElement('canvas');
+     var ctx=c.getContext("2d");
+     var img=new Image();
+     img.onload = function(){
+       //c.width= 100;
+       //c.height=100;
+       ctx.drawImage(img, 0,0);
+     };
+     img.src=imageUri;
+     var dataURL = c.toDataURL("image/jpeg");
+     return dataURL;
+}
   public presentActionSheet() {   
   // Create options for the Camera Dialog
   var options =  {
@@ -295,19 +298,22 @@ lastImage: string = null;
      maximumImagesCount: 1,
   
 }
-    this.imagePicker.getPictures(options).then((imagePath) => {
-      this.presentToast('Upload started.');
-      this.myPhoto = imagePath;
+    this.imagePicker.getPictures(options).then((imageData) => {
+     
+        this.presentToast(imageData);
+      this.myPhoto = imageData;
       //this.uploadPhoto();
-        this.lastImage = imagePath;
-        this.selectImagePath =  imagePath; 
-       this.captureDataUrl = 'data:image/jpeg;base64,' + imagePath;
-           this.captureDataUrl = imagePath; 
+        this.lastImage = imageData;
+        this.selectImagePath =  imageData; 
+       this.captureDataUrl = this.encodeImageUri(imageData);
+        this.presentToast(this.captureDataUrl);
+           this.advert.imageRef = this.captureDataUrl;
            
 }, (err) => {
    this.presentToast('Error while selecting image.');
    this.selectImagePath = 'assets/img/vert_logo.png'
-   this.captureDataUrl = 'data:image/jpeg;base64,' + this.selectImagePath;
+   this.captureDataUrl = this.encodeImageUri(this.selectImagePath);
+   this.advert.imageRef = this.captureDataUrl;
  });
 }
 private presentToast(text) {

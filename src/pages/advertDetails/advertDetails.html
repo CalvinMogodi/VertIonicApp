@@ -11,9 +11,9 @@
 <ion-card>
   <ion-item>
       <ion-avatar item-start>
-        <img src="assets/img/bsLogo.png">
+         <img [(src)]="advert.imageRef">
     </ion-avatar>
-    <h2>{{advert.customerDisplayName}} ({{advert.name}})</h2>
+    <h2>{{advert.userDisplayName}} ({{advert.advertName}})</h2>
   </ion-item>
   <ion-item-group>
     <ion-item-divider color="light">Information</ion-item-divider>
