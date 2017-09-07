@@ -208,15 +208,19 @@ var endDate = this.getDateOnly(new Date(this.advert.dateEnd));
             if(user != null){
                  this.adverts.push(this.advert);
                   confirm.dismiss();
+                   this.loading.dismiss();
                   this.presentToast('Your advert is added successfully');
                   this.navCtrl.push(HomePage);
             }else{
               this.presentToast("Your details do not match with the business details.");
+              confirm.dismiss();
+              this.loading.dismiss();
             }
             });
           }else{
               this.adverts.push(this.advert);
               confirm.dismiss();
+              this.loading.dismiss();
               this.presentToast('Your advert is added successfully');
               this.navCtrl.push(HomePage);
           }
